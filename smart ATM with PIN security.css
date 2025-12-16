@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Banking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a1f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.2) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .container {
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 10px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #6366f1;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .pin-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pin-digit {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .pin-digit:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #6366f1;
+            transform: scale(1.05);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-link {
+            background: transparent;
+            color: #a78bfa;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            color: #c4b5fd;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .account-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .account-type-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(168, 85, 247, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 20px;
+            font-size: 0.75em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .account-number {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .balance {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .account-holder {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-btn {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .transaction-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+            color: white;
+        }
+
+        .transaction-date {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .transaction-amount.credit {
+            color: #10b981;
+        }
+
+        .transaction-amount.debit {
+            color: #ef4444;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 40, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            border-radius: 16px;
+            max-width: 420px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-left: 3px solid #ef4444;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border-left: 3px solid #10b981;
+        }
+
+        .success-popup {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .success-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 12px;
+        }
+
+        .success-message {
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .inspirational-quote {
+            font-style: italic;
+            color: #a78bfa;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 3px solid #a855f7;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.5);
+        }
+
+        .user-count {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .user-count strong {
+            color: #a78bfa;
+            font-size: 1.3em;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .welcome-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-card {
+            padding: 25px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .welcome-card-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 6px;
+        }
+
+        .welcome-card-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+        }
+
+        .account-type-info {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            .action-buttons, .welcome-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .balance {
+                font-size: 2em;
+            }
+
+            .pin-digit {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 <strong>SMART BANKING</strong></h1>
+            <p>✨ Next-Gen Banking Experience ✨</p>
+        </div>
+
+        <div class="content">
+            <!-- Home Screen -->
+            <div class="screen home-screen active">
+                <h2>Welcome to Your Digital Bank</h2>
+                
+                <div class="welcome-cards">
+                    <div class="welcome-card">
+                        <div class="welcome-card-icon">✨</div>
+                        <div class="welcome-card-title">New Here?</div>
+                        <div class="welcome-card-desc">Create your account in seconds</div>
+                    </div>
+                    <div class="welcome-card">
+                        <div class="welcome-card-icon">🔐</div>
+                        <div class="welcome-card-title">Existing User?</div>
+                        <div class="welcome-card-desc">Access your account securely</div>
+                    </div>
+                </div>
+
+                <button class="btn" id="btnCreateAccount">Create New Account</button>
+                <button class="btn btn-secondary" id="btnLoginAccount">Login to Account</button>
+                
+                <div class="user-count">
+                    <strong id="userCount">0</strong>
+                    Registered Users
+                </div>
+            </div>
+
+            <!-- Registration Screen -->
+            <div class="screen register-screen">
+                <h2>Create Your Account</h2>
+                
+                <div id="registerError"></div>
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="registerDOB">
+                </div>
+
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <select id="accountType">
+                        <option value="">Select Account Type</option>
+                        <option value="Savings Account">Savings Account</option>
+                        <option value="Zero Balance Account">Zero Balance Account</option>
+                        <option value="Salary Account">Salary Account</option>
+                        <option value="Student Scholarship Account">Student Scholarship Account</option>
+                        <option value="Current Account">Current Account</option>
+                    </select>
+                    <div class="account-type-info" id="accountTypeInfo" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="registerAccountNo" placeholder="Create a unique account number">
+                </div>
+
+                <div class="form-group">
+                    <label>Initial Deposit (₹) <span id="minDepositLabel"></span></label>
+                    <input type="number" id="registerBalance" placeholder="Enter amount" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Create 4-Digit PIN</label>
+                    <div class="pin-input">
+                        <input type="password" class="pin-digit register-pin" maxlength="1">
+                        <input type="password" class="pin-digit register-pin" maxlength="1">
+                        <input type="password" class="pin-digit register-pin" maxlength="1">
+                        <input type="password" class="pin-digit register-pin" maxlength="1">
+                    </div>
+                </div>
+
+                <button class="btn" id="btnRegister">Create Account</button>
+                <button class="btn btn-link" id="btnBackFromRegister">← Back to Home</button>
+            </div>
+
+            <!-- Login Screen -->
+            <div class="screen login-screen">
+                <h2>Welcome Back</h2>
+                
+                <div id="loginError"></div>
+
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="loginAccountNo" placeholder="Enter your account number">
+                </div>
+
+                <div class="form-group">
+                    <label>Enter Your PIN</label>
+                    <div class="pin-input">
+                        <input type="password" class="pin-digit login-pin" maxlength="1">
+                        <input type="password" class="pin-digit login-pin" maxlength="1">
+                        <input type="password" class="pin-digit login-pin" maxlength="1">
+                        <input type="password" class="pin-digit login-pin" maxlength="1">
+                    </div>
+                </div>
+
+                <button class="btn" id="btnLogin">Login Securely</button>
+                <button class="btn btn-link" id="btnBackFromLogin">← Back to Home</button>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="screen dashboard-screen">
+                <div class="account-card">
+                    <div class="account-type-badge" id="dashboardAccountType"></div>
+                    <div class="account-number">Account • <span id="accountNumber"></span></div>
+                    <div class="balance">₹<span id="displayBalance">0</span></div>
+                    <div class="account-holder"><span id="displayName"></span></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn" id="btnDeposit">💰 Deposit</button>
+                    <button class="action-btn" id="btnWithdraw">💸 Withdraw</button>
+                </div>
+
+                <div class="section-title">Recent Transactions</div>
+                <div class="transaction-list" id="transactionList">
+                    <p style="text-align: center; color: rgba(255,255,255,0.4); padding: 30px;">No transactions yet</p>
+                </div>
+
+                <button class="btn btn-secondary" id="btnLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Transaction</div>
+            <div id="modalError"></div>
+            
+            <div class="form-group">
+                <label>Amount (₹) <span id="modalMinAmount"></span></label>
+                <input type="number" id="transactionAmount" placeholder="Enter amount" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>Confirm with PIN</label>
+                <div class="pin-input">
+                    <input type="password" class="pin-digit modal-pin" maxlength="1">
+                    <input type="password" class="pin-digit modal-pin" maxlength="1">
+                    <input type="password" class="pin-digit modal-pin" maxlength="1">
+                    <input type="password" class="pin-digit modal-pin" maxlength="1">
+                </div>
+            </div>
+
+            <button class="btn" id="btnConfirmTransaction">Confirm Transaction</button>
+            <button class="btn btn-secondary" id="btnCancelTransaction">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-popup">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Account Created Successfully!</div>
+                <div class="success-message">
+                    Welcome to <strong>Smart Banking</strong>!<br>
+                    Your journey to financial freedom begins now.
+                </div>
+                <div class="inspirational-quote">
+                    "The secret to getting ahead is getting started. Your financial goals are now within reach!"
+                </div>
+                <button class="btn" id="btnCloseSuccess" style="margin-top: 15px;">Continue to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bank Database
+        const bankDatabase = {};
+        let currentUser = null;
+        let currentTransactionType = '';
+
+        const accountTypeDetails = {
+            'Savings Account': { minDeposit: 500, description: 'Minimum deposit: ₹500. Earn interest on your savings.' },
+            'Zero Balance Account': { minDeposit: 0, description: 'No minimum balance required. Perfect for beginners.' },
+            'Salary Account': { minDeposit: 0, description: 'For salaried individuals. No minimum balance.' },
+            'Student Scholarship Account': { minDeposit: 100, description: 'Minimum deposit: ₹100. Special benefits for students.' },
+            'Current Account': { minDeposit: 500, description: 'Minimum deposit: ₹500. For business transactions.' }
+        };
+
+        // Setup PIN Input Auto-focus
+        function setupPinInputs(className) {
+            const inputs = document.querySelectorAll(`.${className}`);
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    if (e.target.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        setupPinInputs('register-pin');
+        setupPinInputs('login-pin');
+        setupPinInputs('modal-pin');
+
+        // Show Screen
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(function(s) {
+                s.classList.remove('active');
+            });
+            document.querySelector('.' + screenName + '-screen').classList.add('active');
+            
+            document.getElementById('registerError').innerHTML = '';
+            document.getElementById('loginError').innerHTML = '';
+            
+            updateUserCount();
+        }
+
+        // Update User Count
+        function updateUserCount() {
+            const count = Object.keys(bankDatabase).length;
+            document.getElementById('userCount').textContent = count;
+        }
+
+        // Update Account Type Info
+        document.getElementById('accountType').addEventListener('change', function() {
+            const accountType = this.value;
+            const infoDiv = document.getElementById('accountTypeInfo');
+            const minDepositLabel = document.getElementById('minDepositLabel');
+            
+            if (accountType && accountTypeDetails[accountType]) {
+                infoDiv.style.display = 'block';
+                infoDiv.textContent = accountTypeDetails[accountType].description;
+                minDepositLabel.textContent = '(Min: ₹' + accountTypeDetails[accountType].minDeposit + ')';
+            } else {
+                infoDiv.style.display = 'none';
+                minDepositLabel.textContent = '';
+            }
+        });
+
+        // Register Account
+        function registerAccount() {
+            const name = document.getElementById('registerName').value.trim();
+            const dob = document.getElementById('registerDOB').value;
+            const accountType = document.getElementById('accountType').value;
+            const accountNo = document.getElementById('registerAccountNo').value.trim();
+            const balance = parseFloat(document.getElementById('registerBalance').value);
+            const pinInputs = document.querySelectorAll('.register-pin');
+            const pin = Array.from(pinInputs).map(function(input) { return input.value; }).join('');
+
+            if (!name) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Please enter your name</div>';
+                return;
+            }
+
+            if (!dob) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Please enter your date of birth</div>';
+                return;
+            }
+
+            if (!accountType) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Please select an account type</div>';
+                return;
+            }
+
+            if (!accountNo) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Please enter an account number</div>';
+                return;
+            }
+
+            if (bankDatabase[accountNo]) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Account number already exists!</div>';
+                return;
+            }
+
+            const minDeposit = accountTypeDetails[accountType].minDeposit;
+            if (isNaN(balance) || balance < minDeposit) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Minimum deposit for ' + accountType + ' is ₹' + minDeposit + '</div>';
+                return;
+            }
+
+            if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                document.getElementById('registerError').innerHTML = '<div class="alert alert-error">Please enter a valid 4-digit PIN</div>';
+                return;
+            }
+
+            bankDatabase[accountNo] = {
+                name: name,
+                dob: dob,
+                accountType: accountType,
+                accountNumber: accountNo,
+                pin: pin,
+                balance: balance,
+                transactions: [{
+                    type: 'Initial Deposit',
+                    amount: balance,
+                    date: new Date().toLocaleString(),
+                    balance: balance
+                }]
+            };
+
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerDOB').value = '';
+            document.getElementById('accountType').value = '';
+            document.getElementById('registerAccountNo').value = '';
+            document.getElementById('registerBalance').value = '';
+            pinInputs.forEach(function(input) { input.value = ''; });
+            document.getElementById('accountTypeInfo').style.display = 'none';
+            document.getElementById('minDepositLabel').textContent = '';
+
+            document.getElementById('successModal').classList.add('active');
+            document.getElementById('loginAccountNo').value = accountNo;
+        }
+
+        // Close Success Modal
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+            showScreen('login');
+        }
+
+        // Login Account
+        function loginAccount() {
+            const accountNo = document.getElementById('loginAccountNo').value.trim();
+            const pinInputs = document.querySelectorAll('.login-pin');
+            const pin = Array.from(pinInputs).map(function(input) { return input.value; }).join('');
+
+            if (!accountNo) {
+                document.getElementById('loginError').innerHTML = '<div class="alert alert-error">Please enter your account number</div>';
+                return;
+            }
+
+            if (pin.length !== 4) {
+                document.getElementById('loginError').innerHTML = '<div class="alert alert-error">Please enter your 4-digit PIN</div>';
+                return;
+            }
+
+            if (!bankDatabase[accountNo]) {
+                document.getElementById('loginError').innerHTML = '<div class="alert alert-error">Account not found!</div>';
+                pinInputs.forEach(function(input) { input.value = ''; });
+                return;
+            }
+
+            if (bankDatabase[accountNo].pin !== pin) {
+                document.getElementById('loginError').innerHTML = '<div class="alert alert-error">Incorrect PIN!</div>';
+                pinInputs.forEach(function(input) { input.value = ''; });
+                pinInputs[0].focus();
+                return;
+            }
+
+            currentUser = accountNo;
+            showScreen('dashboard');
+            updateDashboard();
+            
+            document.getElementById('loginAccountNo').value = '';
+            pinInputs.forEach(function(input) { input.value = ''; });
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            if (!currentUser) return;
+            
+            const user = bankDatabase[currentUser];
+            document.getElementById('dashboardAccountType').textContent = user.accountType;
+            document.getElementById('accountNumber').textContent = user.accountNumber;
+            document.getElementById('displayBalance').textContent = user.balance.toFixed(2);
+            document.getElementById('displayName').textContent = user.name;
+
+            const transactionList = document.getElementById('transactionList');
+            if (user.transactions.length === 0) {
+                transactionList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.4); padding: 30px;">No transactions yet</p>';
+            } else {
+                transactionList.innerHTML = user.transactions.map(function(t) {
+                    const isCredit = t.type.includes('Deposit') || t.type.includes('Initial');
+                    return '<div class="transaction-item">' +
+                        '<div>' +
+                        '<div class="transaction-type">' + t.type + '</div>' +
+                        '<div class="transaction-date">' + t.date + '</div>' +
+                        '</div>' +
+                        '<div class="transaction-amount ' + (isCredit ? 'credit' : 'debit') + '">' +
+                        (isCredit ? '+' : '-') + '₹' + t.amount.toFixed(2) +
+                        '</div>' +
+                        '</div>';
+                }).reverse().join('');
+            }
+        }
+
+        // Open Transaction Modal
+        function openModal(type) {
+            currentTransactionType = type;
+            const minAmount = '(Min: ₹100)';
+            document.getElementById('modalTitle').textContent = type === 'deposit' ? 'Deposit Money' : 'Withdraw Money';
+            document.getElementById('modalMinAmount').textContent = minAmount;
+            document.getElementById('transactionModal').classList.add('active');
+            document.getElementById('transactionAmount').value = '';
+            document.getElementById('modalError').innerHTML = '';
+            document.querySelectorAll('.modal-pin').forEach(function(input) { input.value = ''; });
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('transactionModal').classList.remove('active');
+        }
+
+        // Process Transaction
+        function processTransaction() {
+            if (!currentUser) return;
+
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const pinInputs = document.querySelectorAll('.modal-pin');
+            const pin = Array.from(pinInputs).map(function(input) { return input.value; }).join('');
+            const user = bankDatabase[currentUser];
+
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById('modalError').innerHTML = '<div class="alert alert-error">Please enter a valid amount</div>';
+                return;
+            }
+
+            if (amount < 100) {
+                document.getElementById('modalError').innerHTML = '<div class="alert alert-error">Minimum transaction amount is ₹100</div>';
+                return;
+            }
+
+            if (pin !== user.pin) {
+                document.getElementById('modalError').innerHTML = '<div class="alert alert-error">Incorrect PIN</div>';
+                pinInputs.forEach(function(input) { input.value = ''; });
+                pinInputs[0].focus();
+                return;
+            }
+
+            if (currentTransactionType === 'withdraw' && amount > user.balance) {
+                document.getElementById('modalError').innerHTML = '<div class="alert alert-error">Insufficient balance</div>';
+                return;
+            }
+
+            if (currentTransactionType === 'deposit') {
+                user.balance += amount;
+                user.transactions.push({
+                    type: 'Deposit',
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    balance: user.balance
+                });
+            } else {
+                user.balance -= amount;
+                user.transactions.push({
+                    type: 'Withdrawal',
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    balance: user.balance
+                });
+            }
+
+            updateDashboard();
+            closeModal();
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            showScreen('home');
+        }
+
+        // Event Listeners
+        document.getElementById('btnCreateAccount').addEventListener('click', function() {
+            showScreen('register');
+        });
+
+        document.getElementById('btnLoginAccount').addEventListener('click', function() {
+            showScreen('login');
+        });
+
+        document.getElementById('btnRegister').addEventListener('click', registerAccount);
+
+        document.getElementById('btnBackFromRegister').addEventListener('click', function() {
+            showScreen('home');
+        });
+
+        document.getElementById('btnLogin').addEventListener('click', loginAccount);
+
+        document.getElementById('btnBackFromLogin').addEventListener('click', function() {
+            showScreen('home');
+        });
+
+        document.getElementById('btnDeposit').addEventListener('click', function() {
+            openModal('deposit');
+        });
+
+        document.getElementById('btnWithdraw').addEventListener('click', function() {
+            openModal('withdraw');
+        });
+
+        document.getElementById('btnConfirmTransaction').addEventListener('click', processTransaction);
+
+        document.getElementById('btnCancelTransaction').addEventListener('click', closeModal);
+
+        document.getElementById('btnLogout').addEventListener('click', logout);
+
+        document.getElementById('btnCloseSuccess').addEventListener('click', closeSuccessModal);
+
+        // Initialize
+        updateUserCount();
+    </script>
+</body>
+</html>
